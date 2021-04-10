@@ -1,5 +1,5 @@
 # neocities folder syncer
-a little script ive thrown together to quickly sync an entire folder (including subfolders and their respective content) to your neocities website.
+a little script ive thrown together to quickly sync a local website folder (including subfolders and their respective content) to your neocities website.
 
 ## usage
 * install the [neocities py api](https://github.com/neocities/python-neocities)
