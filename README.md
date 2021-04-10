@@ -2,7 +2,8 @@
 a little script ive thrown together to quickly upload an entire folder (including subfolders and their respective content) to neocities
 
 ## usage
-* just run the script like this
+* install the [neocities py api](https://github.com/neocities/python-neocities)
+* run the script like this
 ```
  python neoupload.py <username> <password> <folder>
 ```
