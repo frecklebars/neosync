@@ -30,6 +30,6 @@ def check_leaf(folder_path):
 
 if __name__ == "__main__":
     check_leaf(folder)
-    #nc.upload(*alldirs)
-    print(alldirs)
+    nc.upload(*alldirs)
+    #print(alldirs)
     print("done!")
