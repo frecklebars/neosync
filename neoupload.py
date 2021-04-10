@@ -49,4 +49,5 @@ if __name__ == "__main__":
 
     with open("prevdirs.pkl", "wb") as f:
         pickle.dump(alldirs, f)
+
     print("done!")
