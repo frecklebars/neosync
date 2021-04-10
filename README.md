@@ -1,5 +1,5 @@
 # neocities uploader
-a little script ive thrown together to quickly upload an entire folder (including subfolders and their respective content) to neocities
+a little script ive thrown together to quickly sync an entire folder (including subfolders and their respective content) to your neocities website.
 
 ## usage
 * install the [neocities py api](https://github.com/neocities/python-neocities)
