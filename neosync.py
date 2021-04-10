@@ -48,7 +48,8 @@ if __name__ == "__main__":
     check_leaf(folder)
     compare(alldirs, prevdirs)
     
-    nc.delete(*deldirs)
+    if len(deldirs) > 0:
+        nc.delete(*deldirs)
     nc.upload(*alldirs)
 
     with open("prevdirs.pkl", "wb") as f:
