@@ -36,9 +36,13 @@ def check_leaf(folder_path):
             alldirs.append((filepath, filepath2))
 
 def compare(alldirs, prevdirs):
-    for t in prevdirs:
-        if t not in alldirs:
-            deldirs.append(t[1])
+    for ptuple in prevdirs:
+        delete = True
+        for atuple in alldirs:
+            if ptuple[1] == atuple[1]:
+                delete = False
+        if delete:
+            deldirs.append(ptuple[1])
 
 if __name__ == "__main__":
     check_leaf(folder)
