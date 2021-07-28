@@ -11,4 +11,3 @@ where `<username>` is replaced by your username, `<password>` is your password a
 
 * or instead of doing that you could also just open the file and edit the vars under `CONFIG` then run the file normally
 
-* but why bother
