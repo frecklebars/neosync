@@ -5,7 +5,7 @@ a little script ive thrown together to quickly sync a local website folder (incl
 * install the [neocities py api](https://github.com/neocities/python-neocities)
 * run the script like this
 ```
- python neoupload.py <username> <password> <folder>
+ python neosync.py <username> <password> <folder>
 ```
 where `<username>` is replaced by your username, `<password>` is your password and `<folder>` is the root folder of your project
 
