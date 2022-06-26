@@ -1,58 +1,99 @@
-import os, sys, pickle
-import neocities
+#!/usr/bin/python
 
-###### CONFIG ######
-username = ""
-password = ""
-folder = ""
-####################
+import argparse
+import os, json
+from neocities import NeoCities
 
-if len(sys.argv) > 1:
-    username = sys.argv[1]
-    password = sys.argv[2]
-    folder = sys.argv[3]
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-nc = neocities.NeoCities(username, password)
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("website", type=str, metavar="WEBSITE")
+    parser.add_argument("-d", "--dry", action="store_false", dest="dry", help="dry run")
+    parser.add_argument("-v", "--verbose", action="store_true", dest="verbose", help="verbose")
+    args = parser.parse_args()
 
-try:
-    with open("prevdirs.pkl", "rb") as f:
-        prevdirs = pickle.load(f)
-except:
-    prevdirs = []
+    website = args.website
+    wet = args.dry
+    verbose = args.verbose
 
-alldirs = []
-deldirs = []
+    if not wet: print("DRY RUN")
 
-def check_leaf(folder_path):
-    dirlist = os.listdir(folder_path)
+    with open("websites", "r") as f:
+        websites = json.load(f)
 
-    for d in dirlist:
-        if not "." in d:
-            check_leaf(os.path.join(folder_path, d))
-        else:
-            filepath = os.path.join(folder_path, d)
-            filepath = filepath.replace("\\", "/")
-            filepath2 = filepath.removeprefix(folder + "/")
-            alldirs.append((filepath, filepath2))
+    if website not in websites:
+        print("website info not found")
+        return
 
-def compare(alldirs, prevdirs):
-    for ptuple in prevdirs:
-        delete = True
-        for atuple in alldirs:
-            if ptuple[1] == atuple[1]:
-                delete = False
-        if delete:
-            deldirs.append(ptuple[1])
+    website = websites[website]
+    del(websites)
+
+    if website["path"][-1] != "/":
+        website["path"] = website["path"] + "/"
+
+    nc = NeoCities(website["user"], website["pass"])
+    
+    localfiles = []
+    for path, dirs, files in os.walk(website["path"]):
+        for file in files:
+            localfiles.append(os.path.join(path, file))
+    
+    if verbose: print(f"found {len(localfiles)} local files")
+
+    nclist = nc.listitems()
+    if nclist["result"] != "success":
+        print("failed listing website items")
+        return
+    
+    if verbose: print("fetched site files list")
+
+    nclist = nclist["files"]
+    sitefiles = []
+    for file in nclist:
+        if not file["is_directory"]:
+            sitefiles.append(file["path"])
+
+    if verbose: print(f"found {len(sitefiles)} site files")
+
+    sitefiles.sort()
+    localfiles.sort()
+
+    rmfiles = []
+    addfiles = []
+
+    # get files to delete
+    for sf in sitefiles:
+        if not os.path.join(website["path"], sf) in localfiles:
+            rmfiles.append(sf)
+
+    if verbose: print(f"{len(rmfiles)} files to remove")
+    
+    for lf in localfiles:
+        addfiles.append((lf, lf.replace(website["path"], "")))
+    
+    if len(rmfiles) > 0:
+        if verbose: print("deleting files")
+        if wet: nc.delete(*rmfiles)
+
+    ###############
+    # for some reason uploading throws an error here, even if deleting """works"""
+    # it only works when using username and password, when trying with an api
+    # token it throws a "method not found" error or something like that
+    # cant be bothered to try again to check
+
+    # in any case, this is still useful for deleting
+    # TODO idk fix it? dont really care _that_ much
+    # i guess i could just do an upload with the actual api using requests
+    #
+    # but do i care? at this point i can just write a shell script using their cli tool
+    # which works
+    ###############
+
+    # if verbose: print("uploading files")
+    # if wet: nc.upload(*addfiles)
+
+    print("finished")
 
 if __name__ == "__main__":
-    check_leaf(folder)
-    compare(alldirs, prevdirs)
-    
-    if len(deldirs) > 0:
-        nc.delete(*deldirs)
-    nc.upload(*alldirs)
-
-    with open("prevdirs.pkl", "wb") as f:
-        pickle.dump(alldirs, f)
-
-    print("done!")
+    main()
